@@ -4,22 +4,26 @@ const app = express();
 
 app.use(express.json());
 
-// FIXED LINE: This correctly matches how the software starts up
-const ai = new GoogleGenAI(process.env.GEMINI_API_KEY);
+// FIXED CLIENT INITIALIZATION (Best practice format)
+const ai = new GoogleGenAI({});
 
 app.post('/v1/chat/completions', async (req, res) => {
     try {
         const messages = req.body.messages;
         const userMessage = messages && messages[messages.length - 1] ? messages[messages.length - 1].content : "Hi";
 
-        const model = ai.getGenerativeModel({ 
-            model: "gemini-1.5-flash",
-            systemInstruction: "You are a classic, silly Roblox Noob NPC. Use lots of typos, say things like 'hai', 'ur', 'wat', and use emoticons like :D, :3, and xD. Keep responses short and enthusiastic!"
+        // FIXED CHAT METHOD: Using the proper models.generateContent format
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: userMessage,
+            config: {
+                systemInstruction: "You are a classic, silly Roblox Noob NPC. Use lots of typos, say things like 'hai', 'ur', 'wat', and use emoticons like :D, :3, and xD. Keep responses short and enthusiastic!"
+            }
         });
 
-        const result = await model.generateContent(userMessage);
-        const responseText = result.response.text();
+        const responseText = response.text;
 
+        // Formatted exactly so your current Roblox script thinks it's talking to OpenAI
         res.json({
             choices: [{
                 message: {
