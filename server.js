@@ -4,26 +4,24 @@ const app = express();
 
 app.use(express.json());
 
-// FIXED CLIENT INITIALIZATION (Best practice format)
-const ai = new GoogleGenAI({});
+// FIXED CLIENT SETUP: The new version uses a direct function call
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 app.post('/v1/chat/completions', async (req, res) => {
     try {
         const messages = req.body.messages;
         const userMessage = messages && messages[messages.length - 1] ? messages[messages.length - 1].content : "Hi";
 
-        // FIXED CHAT METHOD: Using the proper models.generateContent format
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: userMessage,
-            config: {
-                systemInstruction: "You are a classic, silly Roblox Noob NPC. Use lots of typos, say things like 'hai', 'ur', 'wat', and use emoticons like :D, :3, and xD. Keep responses short and enthusiastic!"
-            }
+        // FIXED MODEL CALL: Standard way to use the flash model
+        const model = ai.getGenerativeModel({ 
+            model: "gemini-1.5-flash",
+            systemInstruction: "You are a classic, silly Roblox Noob NPC. Use lots of typos, say things like 'hai', 'ur', 'wat', and use emoticons like :D, :3, and xD. Keep responses short and enthusiastic!"
         });
 
-        const responseText = response.text;
+        const result = await model.generateContent(userMessage);
+        const responseText = result.response.text();
 
-        // Formatted exactly so your current Roblox script thinks it's talking to OpenAI
+        // Nicely packaged for your Roblox OpenAI script
         res.json({
             choices: [{
                 message: {
