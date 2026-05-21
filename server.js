@@ -4,9 +4,9 @@ const app = express();
 
 app.use(express.json());
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// FIXED LINE: This correctly matches how the software starts up
+const ai = new GoogleGenAI(process.env.GEMINI_API_KEY);
 
-// This intercepts what your Roblox script is currently sending!
 app.post('/v1/chat/completions', async (req, res) => {
     try {
         const messages = req.body.messages;
@@ -20,7 +20,6 @@ app.post('/v1/chat/completions', async (req, res) => {
         const result = await model.generateContent(userMessage);
         const responseText = result.response.text();
 
-        // This packages it up so your Roblox script thinks it's OpenAI
         res.json({
             choices: [{
                 message: {
