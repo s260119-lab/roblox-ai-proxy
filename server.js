@@ -1,34 +1,34 @@
 const express = require('express');
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 
 app.use(express.json());
 
-// Initialize the new Google GenAI client
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize using the universally supported legacy package layout
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// This route acts as the translator for your Roblox script
 app.post('/v1/chat/completions', async (req, res) => {
     try {
         const messages = req.body.messages;
         const userMessage = messages && messages.length > 0 ? messages[messages.length - 1].content : "Hello";
 
-        // Call the official generateContent method using the new SDK structure
-        const response = await ai.models.generateContent({
+        // Call the generation method using the active 2.0-flash model
+        const model = genAI.getGenerativeModel({ 
             model: "gemini-2.0-flash",
-            contents: userMessage,
-            config: {
-                systemInstruction: "You are a classic 2012 Roblox Noob. You love bacon hairs, use slang like 'pwned', 'oof', 'epic', 'XD', and ':P', and you are very friendly."
-            }
+            systemInstruction: "You are a classic 2012 Roblox Noob. You love bacon hairs, use slang like 'pwned', 'oof', 'epic', 'XD', and ':P', and you are very friendly."
         });
 
-        // Format the response like OpenAI so Roblox reads it cleanly
+        const result = await model.generateContent(userMessage);
+        const response = await result.response;
+        const text = response.text();
+
+        // Send a perfectly clean OpenAI-styled layout back to Roblox
         res.json({
             choices: [
                 {
                     message: {
                         role: "assistant",
-                        content: response.text
+                        content: text
                     }
                 }
             ]
