@@ -1,9 +1,13 @@
 {
   "name": "roblox-ai-proxy",
   "version": "1.0.0",
+  "description": "Roblox Gemini AI Proxy",
   "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
-    "express": "^4.19.2",
-    "@google/genai": "^1.0.0"
+    "@google/generative-ai": "^0.21.0",
+    "express": "^4.19.2"
   }
 }
