@@ -15,7 +15,7 @@ app.post('/v1/chat/completions', async (req, res) => {
 
         // Call the official generateContent method using the new SDK structure
         const response = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.0-flash",
             contents: userMessage,
             config: {
                 systemInstruction: "You are a classic 2012 Roblox Noob. You love bacon hairs, use slang like 'pwned', 'oof', 'epic', 'XD', and ':P', and you are very friendly."
