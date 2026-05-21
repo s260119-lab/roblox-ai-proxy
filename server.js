@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-// Initialize using the universally supported legacy package layout
+// Initialize the Google GenAI client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.post('/v1/chat/completions', async (req, res) => {
@@ -12,17 +12,21 @@ app.post('/v1/chat/completions', async (req, res) => {
         const messages = req.body.messages;
         const userMessage = messages && messages.length > 0 ? messages[messages.length - 1].content : "Hello";
 
-        // Call the generation method using the active 2.0-flash model
+        // Call the active 2.0-flash model
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.0-flash",
             systemInstruction: "You are a classic 2012 Roblox Noob. You love bacon hairs, use slang like 'pwned', 'oof', 'epic', 'XD', and ':P', and you are very friendly."
         });
 
-        const result = await model.generateContent(userMessage);
+        // Pass the message properly wrapped as text content
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts: [{ text: userMessage }] }]
+        });
+        
         const response = await result.response;
         const text = response.text();
 
-        // Send a perfectly clean OpenAI-styled layout back to Roblox
+        // Send a clean OpenAI-styled layout back to Roblox
         res.json({
             choices: [
                 {
