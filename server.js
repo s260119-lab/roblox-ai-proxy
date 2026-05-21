@@ -1,16 +1,15 @@
 const express = require('express');
-const { GoogleGenAI } = require('@google/generative-ai');
+const { GoogleAI } = require('@google/generative-ai');
 const app = express();
 
 app.use(express.json());
 
-// Initialize Gemini safely
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Fixed: Using the correct GoogleAI class constructor
+const ai = new GoogleAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// This route handles what the Roblox script is sending!
+// This route handles what the Roblox script sends
 app.post('/v1/chat/completions', async (req, res) => {
     try {
-        // Grab the message your Roblox script sent
         const messages = req.body.messages;
         const userMessage = messages && messages.length > 0 ? messages[messages.length - 1].content : "Hello";
 
@@ -22,7 +21,7 @@ app.post('/v1/chat/completions', async (req, res) => {
         const result = await model.generateContent(userMessage);
         const responseText = result.response.text();
 
-        // Send it back disguised as an OpenAI response so the Roblox script understands it!
+        // Sends it back formatted exactly like OpenAI so Roblox understands it perfectly
         res.json({
             choices: [
                 {
@@ -39,7 +38,7 @@ app.post('/v1/chat/completions', async (req, res) => {
     }
 });
 
-// A quick backup route just in case
+// Backup route
 app.post('/chat', async (req, res) => {
     try {
         const { message } = req.body;
