@@ -4,7 +4,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 app.use(express.json());
 
-// Render automatically injects GEMINI_API_KEY into process.env, no extra packages needed!
+// Initialize Google Gen AI using the environment variable from your Render dashboard
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // This matches the exact URL path your Roblox script is hitting
@@ -18,10 +18,13 @@ app.post('/v1/chat/completions', async (req, res) => {
         // Extract the latest chat message sent by the player in Roblox
         const userMessage = messages[messages.length - 1].content;
 
-        // Using 2.5-flash-lite to bypass the restricted 2.0-flash free tier limit
+        // UPDATED PERSONALITY: Changed from retro noob to an engaging, friendly social game host
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.5-flash-lite",
-            systemInstruction: "You are a classic 2012 Roblox Noob. Use old-school slang like oof, XD, rawr, and epic. Keep your responses short and silly."
+            systemInstruction: `You are an upbeat, friendly, and highly engaging host of this Roblox Social Baseplate game. 
+            Talk like a normal, modern Roblox player—casual, cool, and welcoming. Do NOT use old 2012 slang like 'oof' or 'rawr'.
+            Your main goal is to keep players entertained and talking. Always be helpful, ask open-ended questions about what they like to build, who they are hanging out with, or what kind of music they like. 
+            Keep your responses concise (1-3 short sentences max) so it fits beautifully inside an in-game text GUI.`
         });
 
         // Request the text generation from Google
