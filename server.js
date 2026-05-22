@@ -1,11 +1,10 @@
 const express = require('express');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 
-// Initialize Google Gen AI using the environment variable from your Render dashboard
+// Render automatically injects GEMINI_API_KEY into process.env, no extra packages needed!
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // This matches the exact URL path your Roblox script is hitting
@@ -19,7 +18,7 @@ app.post('/v1/chat/completions', async (req, res) => {
         // Extract the latest chat message sent by the player in Roblox
         const userMessage = messages[messages.length - 1].content;
 
-        // SWITCHED MODEL HERE: Moving to 2.5-flash-lite to bypass the restricted 2.0-flash free tier limit
+        // Using 2.5-flash-lite to bypass the restricted 2.0-flash free tier limit
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.5-flash-lite",
             systemInstruction: "You are a classic 2012 Roblox Noob. Use old-school slang like oof, XD, rawr, and epic. Keep your responses short and silly."
@@ -43,7 +42,6 @@ app.post('/v1/chat/completions', async (req, res) => {
         });
 
     } catch (error) {
-        // This forces the exact error details to show up in your Render Logs tab
         console.error("CRITICAL GEMINI ERROR:", error);
         res.status(500).json({ error: "Something went wrong with Gemini" });
     }
